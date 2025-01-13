@@ -16,15 +16,25 @@ export const saveToGitHub = async (content: string) => {
   const filename = `diagram-${Date.now()}.mmd`;
   
   try {
-    await octokit.repos.createOrUpdateFileContents({
+    const response = await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
       path: `diagrams/${filename}`,
       message: `Add diagram: ${filename}`,
-      content: btoa(content), // Using browser's built-in btoa instead of Buffer
+      content: btoa(content),
     });
-  } catch (error) {
+
+    if (!response || response.status !== 201) {
+      throw new Error(`Unexpected response: ${response?.status}`);
+    }
+
+    return response;
+  } catch (error: any) {
     console.error("Failed to save to GitHub:", error);
+    // Include response data in the error if available
+    if (error.response?.data) {
+      error.message = `${error.message} - ${JSON.stringify(error.response.data)}`;
+    }
     throw error;
   }
-};
+}
