@@ -21,7 +21,7 @@ export const saveToGitHub = async (content: string) => {
       repo,
       path: `diagrams/${filename}`,
       message: `Add diagram: ${filename}`,
-      content: Buffer.from(content).toString("base64"),
+      content: btoa(content), // Using browser's built-in btoa instead of Buffer
     });
   } catch (error) {
     console.error("Failed to save to GitHub:", error);
