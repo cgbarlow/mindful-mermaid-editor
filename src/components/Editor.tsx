@@ -8,7 +8,7 @@ interface EditorProps {
 
 export const Editor = ({ code, onChange, onError }: EditorProps) => {
   return (
-    <div className="h-full bg-slate-900 p-4">
+    <div className="flex-1 bg-slate-900">
       <CodeEditor
         value={code}
         language="mermaid"
@@ -23,7 +23,7 @@ export const Editor = ({ code, onChange, onError }: EditorProps) => {
           fontFamily: "JetBrains Mono, monospace",
           minHeight: "100%",
         }}
-        className="min-h-full text-white"
+        className="min-h-full text-white p-4"
       />
     </div>
   );
