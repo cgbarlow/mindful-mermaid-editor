@@ -5,6 +5,7 @@ import { Preview } from "@/components/Preview";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { saveToGitHub } from "@/lib/github";
+import { GitHubConfig } from "@/components/GitHubConfig";
 
 const defaultDiagram = `graph TD
     A[Start] --> B{Is it?}
@@ -16,8 +17,18 @@ const defaultDiagram = `graph TD
 const Index = () => {
   const [code, setCode] = useState(defaultDiagram);
   const [error, setError] = useState<string | null>(null);
+  const [showConfig, setShowConfig] = useState(false);
 
   const handleSave = async () => {
+    const token = localStorage.getItem("github_token");
+    const owner = localStorage.getItem("github_owner");
+    const repo = localStorage.getItem("github_repo");
+
+    if (!token || !owner || !repo) {
+      setShowConfig(true);
+      return;
+    }
+
     try {
       await saveToGitHub(code);
       toast.success("Diagram saved successfully!");
@@ -25,6 +36,14 @@ const Index = () => {
       toast.error("Failed to save diagram");
       console.error(err);
     }
+  };
+
+  const handleConfigSave = (config: { token: string; owner: string; repo: string }) => {
+    localStorage.setItem("github_token", config.token);
+    localStorage.setItem("github_owner", config.owner);
+    localStorage.setItem("github_repo", config.repo);
+    toast.success("GitHub configuration saved!");
+    handleSave();
   };
 
   return (
@@ -45,6 +64,11 @@ const Index = () => {
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>
+        <GitHubConfig
+          isOpen={showConfig}
+          onClose={() => setShowConfig(false)}
+          onSave={handleConfigSave}
+        />
       </div>
     </div>
   );
